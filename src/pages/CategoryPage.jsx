@@ -5,24 +5,13 @@ import Back from '../assets/Back.svg';
 import BookCard from '../components/BookCard';
 import SearchBox from '../components/SearchBox';
 import Loader from '../components/Loader';
+import useDebounce from '../hooks/useDebounce';
 
 const CategoryPage = () => {
   const { category } = useParams();
   const [books, setBooks] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loader, setLoader] = useState(false);
-
-  useEffect(() => {
-    fetchBooks(category, searchTerm);
-  }, [category, searchTerm]);
-
-  const searchHandler = (search) => {
-    setSearchTerm(search);
-  }
-
-  const clearHandler = () => {
-    setSearchTerm('');
-  }
 
   const fetchBooks = async (topic, search) => {
     try {
@@ -36,10 +25,21 @@ const CategoryPage = () => {
       setBooks(data.results);
     } catch (error) {
       console.error('Error fetching books:', error);
-    }
-    finally {
+    } finally {
       setLoader(false);
     }
+  };
+
+  useDebounce(() => {
+    fetchBooks(category, searchTerm);
+  }, 500, [category, searchTerm]);
+
+  const searchHandler = (search) => {
+    setSearchTerm(search);
+  };
+
+  const clearHandler = () => {
+    setSearchTerm('');
   };
 
   return (
@@ -51,13 +51,17 @@ const CategoryPage = () => {
 
       <SearchBox searchText={searchTerm} handleChange={searchHandler} handleClear={clearHandler} />
 
-      {loader ? <Loader /> :
+      {loader ? (
+        <Loader />
+      ) : (
         <div className="grid grid-cols-3 bg-gray-50 mt-4 md:grid-cols-6 gap-4">
-          {books.length > 0 ? books.map((book) => (
-            <BookCard key={book.id} book={book} />
-          )) : 'No books found!'}
-
-        </div>}
+          {books.length > 0 ? (
+            books.map((book) => <BookCard key={book.id} book={book} />)
+          ) : (
+            'No books found!'
+          )}
+        </div>
+      )}
     </div>
   );
 };
