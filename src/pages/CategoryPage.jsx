@@ -16,11 +16,8 @@ const CategoryPage = () => {
   const fetchBooks = async (topic, search) => {
     try {
       setLoader(true);
-      const { data } = await axios.get('http://skunkworks.ignitesol.com:8000/books', {
-        params: {
-          topic,
-          search
-        }
+      const { data } = await axios.get('/api/books/', {
+        params: { topic, search }
       });
       setBooks(data.results);
     } catch (error) {
