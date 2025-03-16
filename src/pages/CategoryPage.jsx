@@ -16,7 +16,7 @@ const CategoryPage = () => {
   const fetchBooks = async (topic, search) => {
     try {
       setLoader(true);
-      const { data } = await axios.get('/api/books/', {
+      const { data } = await axios.get('https://gutendex.com/books/', {
         params: { topic, search }
       });
       setBooks(data.results);
